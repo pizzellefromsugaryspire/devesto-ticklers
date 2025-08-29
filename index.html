@@ -16,11 +16,12 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      background: black; /* fallback color */
     }
   </style>
 </head>
 <body>
-  <video id="player" controls autoplay></video>
+  <video id="player" controls muted></video>
 
   <script src="https://unpkg.com/@discord/embedded-app-sdk"></script>
   <script>
@@ -29,9 +30,16 @@
       "https://pizzellefromsugaryspire.github.io/devesto-ticklers/ahhh.mp4",
       "https://pizzellefromsugaryspire.github.io/devesto-ticklers/madefun.mp4"
     ];
+
     const randomIndex = Math.floor(Math.random() * videos.length);
     const player = document.getElementById("player");
     player.src = videos[randomIndex];
+    player.preload = "auto";
+    player.addEventListener("loadedmetadata", () => {
+      player.play().catch(err => {
+        console.warn("Autoplay failed, waiting for user interaction.");
+      });
+    });
     discordSdk.ready().then(() => {
       console.log("Discord Activity Ready!");
       console.log("Chosen video:", videos[randomIndex]);
